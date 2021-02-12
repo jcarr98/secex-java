@@ -29,6 +29,7 @@ public class SenderThread extends Thread {
         }
         catch(IOException e) {
             System.out.println("Error creating sender thread output");
+            input.close();
             return;
         }
 
@@ -49,7 +50,7 @@ public class SenderThread extends Thread {
         catch(IOException e) {
             System.out.println("Error closing socket");
         }
-        
+
         input.close();
     }
 }
