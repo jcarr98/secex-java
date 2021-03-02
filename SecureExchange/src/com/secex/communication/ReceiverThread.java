@@ -1,19 +1,22 @@
+package com.secex.communication;
+
 import java.net.Socket;
 import java.util.Scanner;
-import java.io.PrintWriter;
 import java.io.IOException;
 
 public class ReceiverThread extends Thread {
-    private Socket sock;
-    private Thread t;
+    private final Socket sock;
+    private final String pName;
+    public Thread t;
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
-    public ReceiverThread(Socket sock) {
+    public ReceiverThread(Socket sock, String peerName) {
         this.sock = sock;
+        pName = peerName;
     }
 
     public void start() {
-        System.out.println("Starting receiver thread");
-
         if(t == null) {
             t = new Thread(this, "receiver");
             t.start();
@@ -21,8 +24,6 @@ public class ReceiverThread extends Thread {
     }
 
     public void run() {
-        System.out.println("Running receiver thread");
-
         Scanner input;
         try {
             input = new Scanner(sock.getInputStream());
@@ -32,13 +33,13 @@ public class ReceiverThread extends Thread {
             return;
         }
 
+        System.out.println("Connected to " + pName);
+
         while(input.hasNextLine()) {
             String line = input.nextLine();
-            System.out.println(line);
+            System.out.println(ANSI_GREEN + pName + ": " + line + ANSI_GREEN + ANSI_RESET);
         }
 
         input.close();
-
-        return;
     }
 }

@@ -1,18 +1,19 @@
+package com.secex.communication;
+
 import java.net.Socket;
 import java.util.Scanner;
 import java.io.PrintWriter;
 import java.io.IOException;
 
 public class SenderThread extends Thread {
-    private Socket sock;
-    private Thread t;
+    private final Socket sock;
+    public Thread t;
     
     public SenderThread(Socket sock) {
         this.sock = sock;
     }
 
     public void start() {
-        System.out.println("Starting sender thread");
         if(t == null) {
             t = new Thread(this, "sender");
             t.start();
@@ -20,8 +21,6 @@ public class SenderThread extends Thread {
     }
 
     public void run() {
-        System.out.println("Running sender thread");
-
         Scanner input = new Scanner(System.in);
         PrintWriter out;
         try {
@@ -36,7 +35,8 @@ public class SenderThread extends Thread {
         while(input.hasNextLine()) {
             String line = input.nextLine();
 
-            if(line.equals("quit")) {
+            if(line.equals("/quit")) {
+                out.println(line);
                 break;
             }
 
