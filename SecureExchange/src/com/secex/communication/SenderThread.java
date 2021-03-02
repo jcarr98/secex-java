@@ -1,4 +1,5 @@
 package com.secex.communication;
+import com.secex.main.User;
 
 import java.net.Socket;
 import java.util.Scanner;
@@ -6,11 +7,11 @@ import java.io.PrintWriter;
 import java.io.IOException;
 
 public class SenderThread extends Thread {
-    private final Socket sock;
+    private final User user;
     public Thread t;
     
-    public SenderThread(Socket sock) {
-        this.sock = sock;
+    public SenderThread(User user) {
+        this.user = user;
     }
 
     public void start() {
@@ -21,36 +22,21 @@ public class SenderThread extends Thread {
     }
 
     public void run() {
-        Scanner input = new Scanner(System.in);
-        PrintWriter out;
-        try {
-            out = new PrintWriter(sock.getOutputStream(), true);
-        }
-        catch(IOException e) {
-            System.out.println("Error creating sender thread output");
-            input.close();
-            return;
-        }
+        Scanner fromUser = new Scanner(System.in);
 
-        while(input.hasNextLine()) {
-            String line = input.nextLine();
+        while(fromUser.hasNextLine()) {
+            String line = fromUser.nextLine();
 
             if(line.equals("/quit")) {
-                out.println(line);
+                user.send(line);
                 break;
             }
 
-            out.println(line);
+            user.sendEncrypted(line);
         }
 
         // If user quits, close the socket
-        try {
-            sock.close();
-        }
-        catch(IOException e) {
-            System.out.println("Error closing socket");
-        }
-
-        input.close();
+        user.end();
+        fromUser.close();
     }
 }

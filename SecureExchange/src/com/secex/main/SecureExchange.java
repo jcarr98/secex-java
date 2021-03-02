@@ -1,5 +1,7 @@
 package com.secex.main;
 
+import com.secex.communication.ReceiverThread;
+import com.secex.communication.SenderThread;
 import com.secex.communication.ServerConnector;
 
 import java.security.NoSuchAlgorithmException;
@@ -60,11 +62,26 @@ public class SecureExchange {
 	    System.out.println("Connecting to server...");
 	    String connectedPeer = connector.connect(connectionId);
 
-	    if(connectedPeer != null) {
-	    	user.comms(connectedPeer);
+	    if(connectedPeer == null) {
+			System.out.println("Error connecting to server. Please try again");
+			System.exit(1);
+			return;
 		}
-	    else {
-	    	System.out.println("Error connecting to server. Please try again");
+
+		// Create two new threads - one for sending and one for receiving
+		SenderThread S1 = new SenderThread(user);
+		ReceiverThread R1 = new ReceiverThread(user, connectedPeer);
+
+		S1.start();
+		R1.start();
+
+		try{
+			S1.t.join();
+			R1.t.join();
+			System.out.println("Threads closed");
+		}
+		catch(InterruptedException e) {
+			System.out.println("Error joining threads");
 		}
 	}
 }

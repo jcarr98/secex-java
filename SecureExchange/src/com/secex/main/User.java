@@ -43,6 +43,10 @@ public class User {
         out.println(message);
     }
 
+    public boolean stillReceiving() {
+        return in.hasNextLine();
+    }
+
     public void send(byte[] message) {
         // Encode bytes into string
         String strMessage = Base64.getEncoder().encodeToString(message);
@@ -56,7 +60,20 @@ public class User {
      * @param message The message to encrypt
      */
     public void sendEncrypted(String message) {
+        String ciphertext;
+        // Encrypt message
+        byte[][] encryptedPackage = aes.encrypt(message);
 
+        // Encode iv
+        ciphertext = Base64.getEncoder().encodeToString(encryptedPackage[0]);
+
+        // Add delimiter
+        ciphertext = ciphertext + ",";
+
+        // Add encrypted text
+        ciphertext = ciphertext + Base64.getEncoder().encodeToString(encryptedPackage[1]);
+
+        out.println(ciphertext);
     }
 
     /**
@@ -79,25 +96,31 @@ public class User {
         return bytes;
     }
 
+    public String receiveEncryptedString() {
+        // Get encrypted string
+        String encryptedString = in.nextLine();
+
+        // Get IV and encrypted text
+        String[] parsedEncryptedString = encryptedString.split(",", 2);
+
+        byte[] iv = Base64.getDecoder().decode(parsedEncryptedString[0]);
+        byte[] ciphertext = Base64.getDecoder().decode(parsedEncryptedString[1]);
+
+        // Decrypt message
+        String plaintext = aes.decrypt(iv, ciphertext);
+
+        return plaintext;
+    }
+
     public void setKey(byte[] key) {
         aes.setKey(key);
     }
 
-    public void comms(String peerName) {
-        // Create two new threads - one for sending and one for receiving
-        SenderThread S1 = new SenderThread(socket);
-        ReceiverThread R1 = new ReceiverThread(socket, peerName);
-
-        S1.start();
-        R1.start();
-
-        try{
-            S1.t.join();
-            R1.t.join();
-            System.out.println("Threads closed");
-        }
-        catch(InterruptedException e) {
-            System.out.println("Error joining threads");
+    public void end() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -49,10 +49,6 @@ public class ServerConnector {
         return pName;
     }
 
-    public void start() {
-        user.comms(peer);
-    }
-
     private boolean handshake(int id) {
         String hello = "HELLO " + id;
         // Send id
