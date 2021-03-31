@@ -32,7 +32,22 @@ public class SecureExchange {
 	    // Get connection id
 	    int connectionId;
 	    String dName;
+	    String ip;
+	    int port;
 	    while(true) {
+	    	System.out.print("Please enter an IP address and port number <IP Address> <port #>: ");
+	    	String addr = input.nextLine();
+	    	ip = addr.split("\\s")[0];
+	    	String portStr = addr.split("\\s")[1];
+
+	    	try {
+				port = Integer.parseInt(portStr);
+			}
+	    	catch(NumberFormatException e) {
+	    		System.out.println("Port must be a whole number between 1 and 65535");
+	    		continue;
+			}
+
 	    	System.out.print("Please enter a display name: ");
 	    	dName = input.nextLine();
 	    	if(!validateUsername(dName)) {
@@ -53,7 +68,7 @@ public class SecureExchange {
 	    }
 
 	    // Create a new user
-		User user = new User("127.0.0.1", 8008, dName);
+		User user = new User(ip, port, dName);
 	
 	    // Create a new Server Connector
 		ServerConnector connector = new ServerConnector(user);;

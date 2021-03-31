@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SecureExchange:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SecureExchange_jar</output-path>
+    <root id="archive" name="SecureExchange.jar">
+      <element id="module-output" name="SecureExchange" />
+    </root>
+  </artifact>
+</component>
